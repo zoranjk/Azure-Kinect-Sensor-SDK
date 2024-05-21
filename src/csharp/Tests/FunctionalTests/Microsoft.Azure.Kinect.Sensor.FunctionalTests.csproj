@@ -2,7 +2,7 @@
   <Import Project="..\..\k4a.props" />
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
 
     <IsPackable>false</IsPackable>
 
@@ -10,6 +10,7 @@
     <RunCodeAnalysis>false</RunCodeAnalysis>
     <CodeAnalysisRuleSet>..\..\AzureKinectSensorSDK.ruleset</CodeAnalysisRuleSet>
     <OutputPath>$(BaseOutputPath)\$(AssemblyName)\</OutputPath>
+    <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
   </PropertyGroup>
 
   <ItemGroup>
