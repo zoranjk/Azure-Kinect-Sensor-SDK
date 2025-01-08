@@ -5,6 +5,8 @@
 #include <chrono>
 #include <sys/stat.h>
 
+bool captureIR = false;
+
 bool PointBreak = false;
 
 std::mutex mtConsole;
@@ -61,17 +63,19 @@ void writer_thread_funtion(const uint32_t device_number)
 
 
             // convert the raw buffer to cv::Mat
-            irBuffer = currentFrame.mCapture.get_ir_image().get_buffer();
-            rows = currentFrame.mCapture.get_ir_image().get_height_pixels();
-            cols = currentFrame.mCapture.get_ir_image().get_width_pixels();
-            cv::Mat irMat(rows, cols, CV_16UC1, (void*)irBuffer, cv::Mat::AUTO_STEP);
-            ofilename<<directory<<mFrameCount[device_number] 
-                << "_IR_raw16_" << NewSN
-                << "_"<< currentFrame.ms
-                << "_"<< currentFrame.mCapture.get_ir_image().get_system_timestamp().count()
-                << "_"<< currentFrame.mCapture.get_ir_image().get_device_timestamp().count()<<".tiff"; // create file name for the picture
-            cv::imwrite(ofilename.str(), irMat);
-            ofilename.str(""); 
+            if (captureIR) {
+                irBuffer = currentFrame.mCapture.get_ir_image().get_buffer();
+                rows = currentFrame.mCapture.get_ir_image().get_height_pixels();
+                cols = currentFrame.mCapture.get_ir_image().get_width_pixels();
+                cv::Mat irMat(rows, cols, CV_16UC1, (void*)irBuffer, cv::Mat::AUTO_STEP);
+                ofilename<<directory<<mFrameCount[device_number] 
+                    << "_IR_raw16_" << NewSN
+                    << "_"<< currentFrame.ms
+                    << "_"<< currentFrame.mCapture.get_ir_image().get_system_timestamp().count()
+                    << "_"<< currentFrame.mCapture.get_ir_image().get_device_timestamp().count()<<".tiff"; // create file name for the picture
+                cv::imwrite(ofilename.str(), irMat);
+                ofilename.str(""); 
+            }
 
 
             //IntializeEncoder(9 | LZMA_PRESET_EXTREME);
@@ -197,6 +201,7 @@ int main()
         std::thread worker_thread3(writer_thread_funtion, 3);
         std::thread worker_thread4(writer_thread_funtion, 4);
         std::thread worker_thread5(writer_thread_funtion, 5);
+        std::thread worker_thread6(writer_thread_funtion, 6);
 
 
 
@@ -324,6 +329,7 @@ timer.Reset();
         worker_thread3.join();
         worker_thread4.join();
         worker_thread5.join();
+        worker_thread6.join();
 
 
     
