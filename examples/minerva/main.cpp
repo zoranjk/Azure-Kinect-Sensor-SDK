@@ -119,14 +119,14 @@ int main()
 
 
         //Audio added code #JTK
-        std::cout << "\nRtAudio Version " << RtAudio::getVersion() << std::endl;
-        apis = listApis();
-        RtAudio audio(apis[0]);
-        if (audio.getDeviceCount() < 1) 
-        {
-            std::cerr << "Error: No audio devices found!" << std::endl;
-            return 1;
-        }
+        // std::cout << "\nRtAudio Version " << RtAudio::getVersion() << std::endl;
+        // apis = listApis();
+        // RtAudio audio(apis[0]);
+        // if (audio.getDeviceCount() < 1) 
+        // {
+        //     std::cerr << "Error: No audio devices found!" << std::endl;
+        //     return 1;
+        // }
 
 
 
@@ -144,25 +144,25 @@ int main()
         sprintf(foldername, "KinectImagesTEST/audio/"); 
         mkdir(foldername, 0777);
       
-        listDevices(audio);
+        // listDevices(audio);
        
 
 
 
 
-        int ti = 20;
-        std::thread worker_thread_audio0(writer_thread_funtion_audio, 5);
-        std::this_thread::sleep_for(std::chrono::milliseconds(ti));
-        std::thread worker_thread_audio1(writer_thread_funtion_audio, 4); 
-        std::this_thread::sleep_for(std::chrono::milliseconds(ti));
-        std::thread worker_thread_audio2(writer_thread_funtion_audio, 3); 
-        std::this_thread::sleep_for(std::chrono::milliseconds(ti));
-        std::thread worker_thread_audio3(writer_thread_funtion_audio, 2); 
-        std::this_thread::sleep_for(std::chrono::milliseconds(ti));
-        std::thread worker_thread_audio4(writer_thread_funtion_audio, 1);
-        std::this_thread::sleep_for(std::chrono::milliseconds(ti));
-        std::thread worker_thread_audio5(writer_thread_funtion_audio, 0);
-        std::this_thread::sleep_for(std::chrono::milliseconds(ti+25));
+        // int ti = 20;
+        // std::thread worker_thread_audio0(writer_thread_funtion_audio, 5);
+        // std::this_thread::sleep_for(std::chrono::milliseconds(ti));
+        // std::thread worker_thread_audio1(writer_thread_funtion_audio, 4); 
+        // std::this_thread::sleep_for(std::chrono::milliseconds(ti));
+        // std::thread worker_thread_audio2(writer_thread_funtion_audio, 3); 
+        // std::this_thread::sleep_for(std::chrono::milliseconds(ti));
+        // std::thread worker_thread_audio3(writer_thread_funtion_audio, 2); 
+        // std::this_thread::sleep_for(std::chrono::milliseconds(ti));
+        // std::thread worker_thread_audio4(writer_thread_funtion_audio, 1);
+        // std::this_thread::sleep_for(std::chrono::milliseconds(ti));
+        // std::thread worker_thread_audio5(writer_thread_funtion_audio, 0);
+        // std::this_thread::sleep_for(std::chrono::milliseconds(ti+25));
 
 
 
@@ -311,12 +311,12 @@ timer.Reset();
 //while ( mImageQueue[0].size()>0) { std::cout<<".";}
 
 
-    worker_thread_audio0.join();
-    worker_thread_audio1.join();
-    worker_thread_audio2.join();
-    worker_thread_audio3.join();
-    worker_thread_audio4.join();
-    worker_thread_audio5.join();
+    // worker_thread_audio0.join();
+    // worker_thread_audio1.join();
+    // worker_thread_audio2.join();
+    // worker_thread_audio3.join();
+    // worker_thread_audio4.join();
+    // worker_thread_audio5.join();
 
         worker_thread0.join();
         worker_thread1.join();
@@ -335,8 +335,8 @@ timer.Reset();
 
 
     // Clean up
-    for(unsigned int i=0; i<lames.size(); i++){
-        lame_close(lames[i]);}
+    // for(unsigned int i=0; i<lames.size(); i++){
+    //     lame_close(lames[i]);}
     
 
         //kb.~cKeyboard();  
