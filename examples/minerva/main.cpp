@@ -145,8 +145,8 @@ int main()
         sprintf(foldername, "KinectImagesTEST/calibration/"); 
         mkdir(foldername, 0777);
 
-        sprintf(foldername, "KinectImagesTEST/audio/"); 
-        mkdir(foldername, 0777);
+        // sprintf(foldername, "KinectImagesTEST/audio/"); 
+        // mkdir(foldername, 0777);
       
         // listDevices(audio);
        
