@@ -38,8 +38,8 @@
 #include <sys/types.h>
 
 #include <cstring>
-#include "RtAudio.h"
-#include "lame.h"
+// #include "RtAudio.h"
+// #include "lame.h"
 
 std::vector<k4a::device> mCameras;
 std::vector< std::queue<Frame> > mImageQueue;
@@ -60,12 +60,12 @@ lzma_stream strm;
 //Audio type and structures #JTK
 std::vector<unsigned int> kincet_device_ids;
 std::vector<std::ofstream> outputFiles;
-std::vector< RtAudio::Api > apis;
-std::vector<lame_t> lames;  //its so lame to have a Lame per thread
+// std::vector< RtAudio::Api > apis;
+// std::vector<lame_t> lames;  //its so lame to have a Lame per thread
 std::string device_name = "Kinect";
 
 typedef signed short MY_TYPE;
-#define FORMAT RTAUDIO_SINT16
+// #define FORMAT RTAUDIO_SINT16
 
 struct InputData {
   MY_TYPE* buffer;
@@ -327,125 +327,125 @@ void compress(const uint8_t* buffer, size_t bsize) {
  * Does the actual work - ie writing the data
  * *******************************************/
 // Function to handle audio duplex and write to a raw file
-int audioDuplexCallback([[maybe_unused]]void *outputBuffer, 
-                        void *inputBuffer,
-                        unsigned int nBufferFrames,
-                        [[maybe_unused]] double streamTime,
-                        [[maybe_unused]] RtAudioStreamStatus status,  
-                        void *userData) {
+// int audioDuplexCallback([[maybe_unused]]void *outputBuffer, 
+//                         void *inputBuffer,
+//                         unsigned int nBufferFrames,
+//                         [[maybe_unused]] double streamTime,
+//                         [[maybe_unused]] RtAudioStreamStatus status,  
+//                         void *userData) {
 
-    short *pcmData = static_cast< short*>(inputBuffer);
-    InputData *iData = (InputData *) userData;
+//     short *pcmData = static_cast< short*>(inputBuffer);
+//     InputData *iData = (InputData *) userData;
     
-    int mp3BytesWritten = lame_encode_buffer(lames[iData->dID], pcmData, pcmData, nBufferFrames*channels, mp3Buffer, sizeof(mp3Buffer));
+//     int mp3BytesWritten = lame_encode_buffer(lames[iData->dID], pcmData, pcmData, nBufferFrames*channels, mp3Buffer, sizeof(mp3Buffer));
     
-    //std::cout<< mp3BytesWritten << "  " << nBufferFrames << std::endl;
-    outputFiles[iData->dID].write(reinterpret_cast<char*>(mp3Buffer), mp3BytesWritten);
+//     //std::cout<< mp3BytesWritten << "  " << nBufferFrames << std::endl;
+//     outputFiles[iData->dID].write(reinterpret_cast<char*>(mp3Buffer), mp3BytesWritten);
     
 
-    return 0;
-}
+//     return 0;
+// }
 
 
 /*********************************************
  * Setup up the Thread and init the callback
  * *******************************************/
-void writer_thread_funtion_audio(unsigned int device_number)
-{
-    RtAudio audio(apis[0]);
-    std::vector<unsigned int> devices = audio.getDeviceIds();
-    //std::cout << "Found " << devices.size() << " device(s) ...\n";
-    //std::cout << "\nNumber:   "<< devices[device_number]<<" : " <<device_number<<std::endl;
+// void writer_thread_funtion_audio(unsigned int device_number)
+// {
+//     RtAudio audio(apis[0]);
+//     std::vector<unsigned int> devices = audio.getDeviceIds();
+//     //std::cout << "Found " << devices.size() << " device(s) ...\n";
+//     //std::cout << "\nNumber:   "<< devices[device_number]<<" : " <<device_number<<std::endl;
 
-    RtAudio::StreamParameters parameters;
-    //parameters.deviceId = audio.getDefaultInputDevice();
-    parameters.deviceId = kincet_device_ids[device_number];
-    parameters.nChannels = channels;  
-    parameters.firstChannel = 0;
+//     RtAudio::StreamParameters parameters;
+//     //parameters.deviceId = audio.getDefaultInputDevice();
+//     parameters.deviceId = kincet_device_ids[device_number];
+//     parameters.nChannels = channels;  
+//     parameters.firstChannel = 0;
 
-    unsigned int bufferFrames = BUFFER_SIZE;  // Adjust buffer size as needed
+//     unsigned int bufferFrames = BUFFER_SIZE;  // Adjust buffer size as needed
 
-    RtAudio::StreamOptions options;
-    //options.flags |= RTAUDIO_NONINTERLEAVED;
-    //options.flags |= RTAUDIO_SCHEDULE_REALTIME;
-    unsigned int bufferBytes = bufferFrames * channels * sizeof( RTAUDIO_SINT16 );
-    InputData data;
-    data.buffer = 0;
-    data.buffer = (MY_TYPE*)malloc( bufferBytes );
-    data.dID = device_number;
+//     RtAudio::StreamOptions options;
+//     //options.flags |= RTAUDIO_NONINTERLEAVED;
+//     //options.flags |= RTAUDIO_SCHEDULE_REALTIME;
+//     unsigned int bufferBytes = bufferFrames * channels * sizeof( RTAUDIO_SINT16 );
+//     InputData data;
+//     data.buffer = 0;
+//     data.buffer = (MY_TYPE*)malloc( bufferBytes );
+//     data.dID = device_number;
 
 
-    audio.openStream(nullptr, &parameters, RTAUDIO_SINT16, sampleRate,
-          &bufferFrames, &audioDuplexCallback, (void *)&data, &options );
-    audio.startStream();
+//     audio.openStream(nullptr, &parameters, RTAUDIO_SINT16, sampleRate,
+//           &bufferFrames, &audioDuplexCallback, (void *)&data, &options );
+//     audio.startStream();
 
-        //std::this_thread::sleep_for(std::chrono::seconds(long_time));
-        while(do_capture){};
-        std::cout<<"BROKE out of sleep..."<<device_number<<"\n";
+//         //std::this_thread::sleep_for(std::chrono::seconds(long_time));
+//         while(do_capture){};
+//         std::cout<<"BROKE out of sleep..."<<device_number<<"\n";
 
-    // Stop and close the audio stream when done
-    audio.stopStream();
-    audio.closeStream();
-}
+//     // Stop and close the audio stream when done
+//     audio.stopStream();
+//     audio.closeStream();
+// }
 
 
 /*********************************************
  * List the Currrent Audio APIs on the device
  * *******************************************/
-std::vector< RtAudio::Api > listApis()
-{
-  std::vector< RtAudio::Api > apis;
-  RtAudio :: getCompiledApi( apis );
+// std::vector< RtAudio::Api > listApis()
+// {
+//   std::vector< RtAudio::Api > apis;
+//   RtAudio :: getCompiledApi( apis );
 
-  std::cout << "\nCompiled APIs:\n";
-  for ( size_t i=0; i<apis.size(); i++ )
-    std::cout << i << ". " << RtAudio::getApiDisplayName(apis[i])
-              << " (" << RtAudio::getApiName(apis[i]) << ")" << std::endl;
+//   std::cout << "\nCompiled APIs:\n";
+//   for ( size_t i=0; i<apis.size(); i++ )
+//     std::cout << i << ". " << RtAudio::getApiDisplayName(apis[i])
+//               << " (" << RtAudio::getApiName(apis[i]) << ")" << std::endl;
 
-  return apis;
-}
+//   return apis;
+// }
 
 
 /*********************************************
  * List the Connected devices that you need
  * *******************************************/
-void listDevices( RtAudio& audio )
-{
-  RtAudio::DeviceInfo info;
-  int audio_devs_found = 0;
+// void listDevices( RtAudio& audio )
+// {
+//   RtAudio::DeviceInfo info;
+//   int audio_devs_found = 0;
 
-  std::cout << "\nAPI: " << RtAudio::getApiDisplayName(audio.getCurrentApi()) << std::endl;
+//   std::cout << "\nAPI: " << RtAudio::getApiDisplayName(audio.getCurrentApi()) << std::endl;
 
-  std::vector<unsigned int> devices = audio.getDeviceIds();
-  std::cout << "Found " << devices.size() << " device(s) ...\n";
+//   std::vector<unsigned int> devices = audio.getDeviceIds();
+//   std::cout << "Found " << devices.size() << " device(s) ...\n";
 
-  std::vector<unsigned int> deviceIds = audio.getDeviceIds();
-  for (unsigned int i=0; i<devices.size(); i++) {
-    info = audio.getDeviceInfo( devices[i] );
+//   std::vector<unsigned int> deviceIds = audio.getDeviceIds();
+//   for (unsigned int i=0; i<devices.size(); i++) {
+//     info = audio.getDeviceInfo( devices[i] );
 
-    if (info.name.find(device_name) != std::string::npos) {
-      audio_devs_found = audio_devs_found+1;
-      kincet_device_ids.push_back(deviceIds[i]);
-      outputFiles.push_back(std::ofstream("KinectImagesTEST/audio/output"+std::to_string(i)+".mp3", std::ios::binary));
+//     if (info.name.find(device_name) != std::string::npos) {
+//       audio_devs_found = audio_devs_found+1;
+//       kincet_device_ids.push_back(deviceIds[i]);
+//       outputFiles.push_back(std::ofstream("KinectImagesTEST/audio/output"+std::to_string(i)+".mp3", std::ios::binary));
 
-      std::cout << "\nDevice Name = " << info.name << '\n';
-      std::cout << "Device Index = " << i << '\n';
-      std::cout << "Device ID = " << deviceIds[i] << '\n';
-      std::cout << "file ID = " <<"output"+std::to_string(i)+".mp3" << '\n';
+//       std::cout << "\nDevice Name = " << info.name << '\n';
+//       std::cout << "Device Index = " << i << '\n';
+//       std::cout << "Device ID = " << deviceIds[i] << '\n';
+//       std::cout << "file ID = " <<"output"+std::to_string(i)+".mp3" << '\n';
 
-      lame_t lame = lame_init();
-      // Initialize LAME encoder
-      lame_set_in_samplerate(lame, sampleRate*channels); // Set input sample rate (adjust as needed)
-      lame_set_out_samplerate(lame, sampleRate); // Set output sample rate (adjust as needed)
-      lame_set_num_channels(lame, channels); // Set number of channels (adjust as needed)
-      //lame_set_mode(lame, STEREO); // Set output mode (e.g., stereo)
-      lame_set_quality(lame, 2); // Set encoding quality (0-9, where 2 is good quality)
-      lame_set_VBR(lame, vbr_default);//vbr_default
-      lame_init_params(lame);
-      lames.push_back(lame);
-    }
+//       lame_t lame = lame_init();
+//       // Initialize LAME encoder
+//       lame_set_in_samplerate(lame, sampleRate*channels); // Set input sample rate (adjust as needed)
+//       lame_set_out_samplerate(lame, sampleRate); // Set output sample rate (adjust as needed)
+//       lame_set_num_channels(lame, channels); // Set number of channels (adjust as needed)
+//       //lame_set_mode(lame, STEREO); // Set output mode (e.g., stereo)
+//       lame_set_quality(lame, 2); // Set encoding quality (0-9, where 2 is good quality)
+//       lame_set_VBR(lame, vbr_default);//vbr_default
+//       lame_init_params(lame);
+//       lames.push_back(lame);
+//     }
 
-  }
-  std::cout << "\nNumber of AUDIO DEVICES("+device_name+ ") FOUND = " << audio_devs_found << '\n';
-  std::cout << "\nNumber of FILES FOUND = " << outputFiles.size()  << '\n';
-}
+//   }
+//   std::cout << "\nNumber of AUDIO DEVICES("+device_name+ ") FOUND = " << audio_devs_found << '\n';
+//   std::cout << "\nNumber of FILES FOUND = " << outputFiles.size()  << '\n';
+// }
