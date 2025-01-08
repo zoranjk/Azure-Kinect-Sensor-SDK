@@ -26,7 +26,6 @@ void writer_thread_funtion(const uint32_t device_number)
 
     while (PointBreak == false || mImageQueue[device_number].size() > 0)
     {
-        
         if (mImageQueue[device_number].size() > 0)
         {
             omp_init_lock(&countlock);
@@ -36,15 +35,13 @@ void writer_thread_funtion(const uint32_t device_number)
             rows = currentFrame.mCapture.get_color_image().get_height_pixels();
             cols = currentFrame.mCapture.get_color_image().get_width_pixels();
             cv::Mat colorMat(rows , cols, CV_8UC4, (void*)colorBuffer, cv::Mat::AUTO_STEP);
-            //cv::imwrite("Image-color.tiff", colorMat);
 
             ofilename<<directory<<mFrameCount[device_number] 
                 << "_RGB_" << NewSN
                 << "_"<< currentFrame.ms
                 << "_"<< currentFrame.mCapture.get_color_image().get_system_timestamp().count()
                 << "_"<< currentFrame.mCapture.get_color_image().get_device_timestamp().count()<<".jpg"; // create file name for the picture
-           cv::imwrite(ofilename.str() , colorMat);
-        //    std::cout<<ofilename.str()<<std::endl;
+            cv::imwrite(ofilename.str() , colorMat);
             ofilename.str(""); 
 
 
@@ -77,22 +74,6 @@ void writer_thread_funtion(const uint32_t device_number)
                 ofilename.str(""); 
             }
 
-
-            //IntializeEncoder(9 | LZMA_PRESET_EXTREME);
-            //compress(colorBuffer, colorImage.get_size());
-            //std::cout<<colorImage.get_size()<<std::endl;
-            //std::cout<<colorImage.get_format()<<std::endl;
-            //std::cout<<colorImage.get_stride_bytes()<<std::endl<<std::endl;
-            //std::cout<<(int)colorBuffer[0]<<std::endl;
-
-            //std::cout<<depthImage.get_size()<<std::endl;
-            //std::cout<<depthImage.get_format()<<std::endl;
-            //std::cout<<depthImage.get_stride_bytes()<<std::endl<<std::endl;
-
-            //std::cout<<irImage.get_size()<<std::endl;
-            //std::cout<<irImage.get_format()<<std::endl;
-            //std::cout<<irImage.get_stride_bytes()<<std::endl<<std::endl;
-
             mImageQueue[device_number].pop();
             mFrameCount[device_number]++; 
             omp_unset_lock(&countlock);
@@ -102,13 +83,8 @@ void writer_thread_funtion(const uint32_t device_number)
             count++;
             std::this_thread::sleep_for(std::chrono::milliseconds(33)); // 200
         }
-        
-        //if (count > 52000 || PointBreak) { std::cout<<"Exiting Thread Empty.."<<std::endl; break;}  //this is a shitty way to pause to check its empty.
     }
 
-    //delete colorBuffer;
-    //delete depthBuffer;
-    //delete irBuffer;
     return;
 }
 
@@ -118,22 +94,7 @@ int main()
 {
     try
     {
-
         Timer timer(true);
-
-
-        //Audio added code #JTK
-        // std::cout << "\nRtAudio Version " << RtAudio::getVersion() << std::endl;
-        // apis = listApis();
-        // RtAudio audio(apis[0]);
-        // if (audio.getDeviceCount() < 1) 
-        // {
-        //     std::cerr << "Error: No audio devices found!" << std::endl;
-        //     return 1;
-        // }
-
-
-
 
         // create folder for the camera and create it if it doesnt already exist
         float etime = 0.0f;
@@ -145,48 +106,18 @@ int main()
         sprintf(foldername, "KinectImagesTEST/calibration/"); 
         mkdir(foldername, 0777);
 
-        // sprintf(foldername, "KinectImagesTEST/audio/"); 
-        // mkdir(foldername, 0777);
-      
-        // listDevices(audio);
-       
-
-
-
-
-        // int ti = 20;
-        // std::thread worker_thread_audio0(writer_thread_funtion_audio, 5);
-        // std::this_thread::sleep_for(std::chrono::milliseconds(ti));
-        // std::thread worker_thread_audio1(writer_thread_funtion_audio, 4); 
-        // std::this_thread::sleep_for(std::chrono::milliseconds(ti));
-        // std::thread worker_thread_audio2(writer_thread_funtion_audio, 3); 
-        // std::this_thread::sleep_for(std::chrono::milliseconds(ti));
-        // std::thread worker_thread_audio3(writer_thread_funtion_audio, 2); 
-        // std::this_thread::sleep_for(std::chrono::milliseconds(ti));
-        // std::thread worker_thread_audio4(writer_thread_funtion_audio, 1);
-        // std::this_thread::sleep_for(std::chrono::milliseconds(ti));
-        // std::thread worker_thread_audio5(writer_thread_funtion_audio, 0);
-        // std::this_thread::sleep_for(std::chrono::milliseconds(ti+25));
-
-
-
-
         // Check for devices
         const uint32_t device_count = k4a::device::get_installed_count();
         if (device_count == 0)
         {
             throw std::runtime_error("No Azure Kinect devices detected!");
-        } else if (device_count < 6) {
-//            throw std::runtime_error("Less than 6 Azure Kinect devices are connected!");
-//            exit(1);
+        } else if (device_count < 7) {
         }
-        std::cout<<"Number of Kinect Video Devices detected: "<< device_count <<"\n";
+        std::cout<<"Number of Kinect Video Devices detected: " << device_count <<"\n";
         
         OpenDetectedDevices(device_count);
         SetUpDataStorage(device_count);
         std::this_thread::sleep_for(std::chrono::milliseconds(33));
-
-
 
         //Check Output files are created.
         for(unsigned int i=0; i<outputFiles.size(); i++)
@@ -202,7 +133,6 @@ int main()
         std::thread worker_thread4(writer_thread_funtion, 4);
         std::thread worker_thread5(writer_thread_funtion, 5);
         std::thread worker_thread6(writer_thread_funtion, 6);
-
 
 
         // Poll the device for new image data.
@@ -227,58 +157,38 @@ int main()
 
         using clock = std::chrono::steady_clock;
         auto next_frame = clock::now();
-        //bool ret;
 
 
-       while (i < 30) {
-        //while (true){
-            
+        while (i < 30) {
             next_frame += std::chrono::milliseconds(66); //33
 
             #pragma omp parallel for 
             for(uint j=0; j<device_count; j++)
             {   
-               // omp_set_lock(&writelock);
-               // std::cout <<omp_get_thread_num()<< "E\n";
-                try{
+                try {
                  mCameras[ omp_get_thread_num()].get_capture(&mCaptures[omp_get_thread_num()], std::chrono::milliseconds(66));               //ret = mCameras[omp_get_thread_num() ].get_capture(&mCaptures[omp_get_thread_num() ], std::chrono::milliseconds(-1));
                 //std::cout<<i<<": " <<ret<<std::endl;
                 }
                 catch (const std::exception &e)
                 {//std::cout << "Error-------------1\n";
                 }
-    
-                //omp_unset_lock(&writelock);
-             //                         mCaptures[omp_get_thread_num() ].reset();
-                //std::this_thread::sleep_until(next_frame);
             }
             i++;
-            if( kb.getKeyState(KEY_ESC) ){ 
-               // std::cout << "CAUGHT A BREAK!" << std::endl; 
-                PointBreak=true; break;}
+            if( kb.getKeyState(KEY_ESC) ) {
+                PointBreak=true; break; }
 
         }
 
-//int threadID= -1;
 i=0;
 std::cout<<"Warmed up!....\n";
 timer.Reset();
-        // while (i < 300) {
-            //std::cout<<i<<" ";
         while (true){
-            
-      //      next_frame += std::chrono::milliseconds(33); //33
-
             #pragma omp parallel for 
             for(uint j=0; j<device_count; j++)
             {   
                 int threadID= omp_get_thread_num();
-               // omp_set_lock(&writelock);
-               // std::cout <<omp_get_thread_num()<< "E\n";
                 try{
                 mCameras[ threadID].get_capture(&mCaptures[threadID], std::chrono::milliseconds(33));
-                //ret = mCameras[omp_get_thread_num() ].get_capture(&mCaptures[omp_get_thread_num() ], std::chrono::milliseconds(-1));
-                //std::cout<<i<<": " <<ret<<std::endl;
                 }
                 catch (const std::exception &e)
                 {//std::cout << "Error-------------1\n";
@@ -291,10 +201,6 @@ timer.Reset();
                 catch (const std::exception &e)
                 {//std::cout << "Error -----------2";
                 }
-     
-                //omp_unset_lock(&writelock);
-             //                         mCaptures[omp_get_thread_num() ].reset();
-                //std::this_thread::sleep_until(next_frame);
             }
             
             i++;
@@ -305,23 +211,11 @@ timer.Reset();
         }
         etime = timer.Elapsed().count();
 
-
-        
         std::cout << "Elapsed time: " << std::fixed << etime << "ms , (seconds: "<< etime/1000 <<")\n";
 
         junk = CloseDetectedDevices(device_count);
         PointBreak=true;
- std::cout << "waiting..." << junk << "\n";
-
-//while ( mImageQueue[0].size()>0) { std::cout<<".";}
-
-
-    // worker_thread_audio0.join();
-    // worker_thread_audio1.join();
-    // worker_thread_audio2.join();
-    // worker_thread_audio3.join();
-    // worker_thread_audio4.join();
-    // worker_thread_audio5.join();
+        std::cout << "waiting..." << junk << "\n";
 
         worker_thread0.join();
         worker_thread1.join();
@@ -330,23 +224,16 @@ timer.Reset();
         worker_thread4.join();
         worker_thread5.join();
         worker_thread6.join();
-
-
     
-    std::cout << "Joined to main thread: "<< mFrameCount[0] << std::endl;
+        std::cout << "Joined to main thread: "<< mFrameCount[0] << std::endl;
 
-    // Close the output file
-    for(unsigned int i=0; i<outputFiles.size(); i++)
-        outputFiles[i].close();
-
-
-    // Clean up
-    // for(unsigned int i=0; i<lames.size(); i++){
-    //     lame_close(lames[i]);}
-    
-
-        //kb.~cKeyboard();  
-        std::cout << "Exiting ... " << std::endl;
+        // Close the output file
+        for(unsigned int i=0; i<outputFiles.size(); i++)
+        {
+            outputFiles[i].close();
+        }
+     
+        std::cout << "Exiting... " << std::endl;
     }
     catch (const std::exception &e)
     {
@@ -357,7 +244,6 @@ timer.Reset();
     }
 
     std::cout<<mImageQueue[0].size()<<std::endl;
-
 
     std::cout << "Exiting cleanly... " << std::endl;
     return (int)0;
